@@ -1,71 +1,70 @@
+package com.aryan.knighttour;
+
 public class KnightTour {
-    static int N = 8;
+    static int CHECKS = 8;
+
   
-    /* A utility function to check if i,j are
-       valid indexes for N*N chessboard */
-    static boolean isSafe(int x, int y, int sol[][])
+   
+    static boolean isPositionOk(int x, int y, int checkBoardArr[][])
     {
-        return (x >= 0 && x < N && y >= 0 && y < N
-                && sol[x][y] == -1);
+        return (x >= 0 && x < CHECKS && y >= 0 && y < CHECKS
+                && checkBoardArr[x][y] == 0);
     }
   
-    /* A utility function to print solution
-       matrix sol[N][N] */
-    static void printSolution(int sol[][])
+    
+    static void printChessBoard(int checkBoardArr[][])
     {
-        for (int x = 0; x < N; x++) {
-            for (int y = 0; y < N; y++)
-                System.out.print(sol[x][y] + " ");
-            System.out.println();
+    	System.out.println("---------------------------------------------------------------------------------");
+    	System.out.println(" ");
+        for (int x = 0; x < CHECKS; x++) {
+            for (int y = 0; y < CHECKS; y++)
+            	if (checkBoardArr[x][y] != -1 && checkBoardArr[x][y] < 10)
+            		System.out.print("|     " + checkBoardArr[x][y] + "   ");
+            	else if (checkBoardArr[x][y] != -1 && checkBoardArr[x][y] < 10)
+            		System.out.print("|     " + checkBoardArr[x][y] + "   ");
+            	else
+            		System.out.print("|    " + checkBoardArr[x][y] + "   ");
+            System.out.println("|");
         }
+        System.out.println(" ");
+        System.out.println("---------------------------------------------------------------------------------");
     }
   
-    /* This function solves the Knight Tour problem
-       using Backtracking.  This  function mainly
-       uses solveKTUtil() to solve the problem. It
-       returns false if no complete tour is possible,
-       otherwise return true and prints the tour.
-       Please note that there may be more than one
-       solutions, this function prints one of the
-       feasible solutions.  */
-    static boolean solveKT()
+    
+    static boolean run()
     {
-        int sol[][] = new int[8][8];
+        int checkBoardArr[][] = new int[8][8];
   
-        /* Initialization of solution matrix */
-        for (int x = 0; x < N; x++)
-            for (int y = 0; y < N; y++)
-                sol[x][y] = -1;
+        for (int x = 0; x <CHECKS; x++)
+            for (int y = 0; y < CHECKS; y++)
+                checkBoardArr[x][y] = 0;
   
-        /* xMove[] and yMove[] define next move of Knight.
-           xMove[] is for next value of x coordinate
-           yMove[] is for next value of y coordinate */
+        
         int xMove[] = { 2, 1, -1, -2, -2, -1, 1, 2 };
         int yMove[] = { 1, 2, 2, 1, -1, -2, -2, -1 };
   
-        // Since the Knight is initially at the first block
-        sol[0][0] = 0;
+        // Start with value 1 in 0,0
+        checkBoardArr[0][0] = 1;
   
-        /* Start from 0,0 and explore all tours using
-           solveKTUtil() */
-        if (!solveKTUtil(0, 0, 1, sol, xMove, yMove)) {
-            System.out.println("Solution does not exist");
+
+        if (!recursiveKT(0, 0, 2, checkBoardArr, xMove, yMove)) {
+            System.out.println("error");
             return false;
         }
-        else
-            printSolution(sol);
+        else {
+        	printChessBoard(checkBoardArr);
+        } 	
   
         return true;
     }
   
-    /* A recursive utility function to solve Knight
-       Tour problem */
-    static boolean solveKTUtil(int x, int y, int movei,
-                               int sol[][], int xMove[],
+  
+    static boolean recursiveKT(int x, int y, int movei,
+                               int checkBoardArr[][], int xMove[],
                                int yMove[])
     {
         int k, next_x, next_y;
-        if (movei == N * N)
+        if (movei == (CHECKS * CHECKS)+1)
             return true;
   
         /* Try all next moves from the current coordinate
@@ -73,24 +72,22 @@ public class KnightTour {
         for (k = 0; k < 8; k++) {
             next_x = x + xMove[k];
             next_y = y + yMove[k];
-            if (isSafe(next_x, next_y, sol)) {
-                sol[next_x][next_y] = movei;
-                if (solveKTUtil(next_x, next_y, movei + 1,
-                                sol, xMove, yMove))
+            boolean isDroppingSafe=isPositionOk(next_x, next_y, checkBoardArr);
+            if (isDroppingSafe) {
+                checkBoardArr[next_x][next_y] = movei;
+                if (recursiveKT(next_x, next_y, movei + 1, checkBoardArr, xMove, yMove))
                     return true;
                 else
-                    sol[next_x][next_y]
-                        = -1; // backtracking
+                    checkBoardArr[next_x][next_y]
+                        = 0; 
             }
         }
   
         return false;
     }
   
-    /* Driver Code */
     public static void main(String args[])
     {
-        // Function Call
-        solveKT();
+        run();
     }
 }
